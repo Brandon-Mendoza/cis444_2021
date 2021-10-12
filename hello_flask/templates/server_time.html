@@ -5,13 +5,43 @@
 	 <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
     </head>
     <body>
-	            <script>
+      <script>
 
-               			 setInterval( function(){ $('#mytime').html( "Client Time is " + new Date());}, 500);
-				 setInterval( function(){ $('#hello').html( "hello");}, 500);
-        	</script>
-	    <h1 id="mytime"></h1>
-	    <h2 id="hello"> </h2>
-	    <h1>Server Time is {{server_time}}</h1>
+        setInterval( function(){ $('#mytime').html( "Client Time is " + new Date());}, 500);
+	setInterval( function(){ $('#hello').html( "hello");}, 500);
+      </script>
+
+      <h1 id="mytime" style = "color:white"></h1>
+      <h1 style = "color:white">Server Time is {{server_time}}</h1>
+      
+      <style>
+	body {
+	    background-image: url('https://wallpaperaccess.com/full/723271.png');
+	    background-attachment: fixed;
+	}
+      </style>
+
+      <h2 style ="color:white;">
+	Do you want to see the Metroid Dread trailer?
+	  
+	<button id ="yes"type="button">YES!</button>
+	<button id ="no"type="button">No thanks</button>
+      </h2>
+      
+      <script>
+	$("#no").click(function(){
+	      $("#playTrailer").hide();
+	});
+      </script>
+
+      <script>
+        $("#yes").click(function(){
+            $("#playTrailer").show(1000);
+        });
+      </script>
+      
+      <iframe id = "playTrailer"width="1000" height="600" src="https://www.youtube.com/embed/V_XnbTayTH4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      
     </body>
+    
 </html>
