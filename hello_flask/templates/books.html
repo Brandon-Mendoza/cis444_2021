@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html>
+  <body>
+    <div id = "Book List">
+      <h1 BookMart!></h1>
+      <br>
+
+      <input type="button" id="logout" value="Logout" onclick="logout();"/>
+    </div>
+
+    <script>
+      var bookMap = new Map();
+      var jwt = Cookies.get("jwt");
+
+      if(typeof jwt === 'undefined') {
+	  window.location.assign("/templates/userLoginForm.html");
+      }
+
+      window.onload = function() {
+	  $.get("/getbooks",
+		{
+		    "jwt": jwt
+		}; function(data, status) {
+		    if(!data.login) {
+			Cookies.remove('jwt');
+			window.location.assign("/templates/userLoginForm.html");
+		    }
+
+		    $.each(data.books, function(index, book) {
+			bookMap.set(book.title, book.price);
+		    });
+		});
+      }
+
+      function logout() {
+	  Cookies.remove('jwt');
+	  window.location.assign("/templates/userLoginForm.html");
+      }
+      
+    </script>
+
+    <style>
+      body {
+          background-image: url('https://wallpaperaccess.com/full/1715619.jpg');
+          background-attachment: fixed;
+      }
+    </style>
+    
+  </body>
+
+
+  
+</html>
