@@ -1,56 +1,123 @@
 <!DOCTYPE html>
+
+
 <html>
-    <head>
-	     <script src="https://code.jquery.com/jquery-3.6.0.js" 
-		     integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
-	     <script src="/static/cis444.js"></script>
-    </head>
-    <body>
+  <head>
+    <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js">
+    </script>
+  </head>
+  
+  
+  <body>
+	
 
-	<script>
-		function send_form(){
-			$.post("/open_api/login", { "firstname":$('#fname').val(), "password":$('#password').val()},
-                       		function(data, textStatus) {
-					//this gets called when browser receives response from server
-					console.log(data.token);
-					//Set global JWT
-					jwt = data.token;
-					//make secure call with the jwt
-					get_books();
-				}, "json").fail( function(response) {
-					//this gets called if the server throws an error
-					console.log("error");
-					console.log(response);
-				});
-			return false;
-		}
+    <div id = "login">
+	            
+      <h2>User Login</h2>
+		    
+      <input type="text" id='username' name='username' placeholder="Username"/>
+      <br>
+      <input type="password" id='password' name="password" placeholder="Password"/>
+      <br>
+      <input type="button" id="login" value="Login" onclick="login();"/>
+      
+      
+    </div>
+	    
 
-		function get_books(){
-			 //make secure call with the jwt
-			secure_get_with_token("/secure_api/get_books", {} , function(data){
-					console.log("got books"); 
-					console.log(data); 
-					$('#buybook').show();
-					},
-                                                function(err){ console.log(err) });
-		}
-                function buy_book(book_id){
-                         //make secure call with the jwt
-                        secure_get_with_token("/secure_api/get_books", {"book_id" : book_id} , function(data){console.log("got books"); console.log(data)},
-                                                function(err){ console.log(err) });
-                }
+    <div id="bookList">
+      <h1>BookMart!</h1>
+      <table>
+	<thead>
+	  <tr>
+	    <th>Author</th>
+	    <th>Title</th>
+	    <th>Price</th>
+	    <th></th>
+	  </tr>
+	</thead>
+	<tbody id="books">
+	</tbody>
+      </table>
+    </div>
+		
 
-	</script>
-            <div id="login">
-	    	<form >
-  			<label for="fname">First name:</label><br>
-  				<input type="text" id="fname" name="fname" value="John"><br>
-  			<label for="password">Password:</label><br>
-  				<input type="password" id="password" name="password" value="12212"><br><br>
-  			<input type="submit" value="Signup" onclick="return send_form();">
-		</form>
-	    </div>
-	    <button id="buybook" onclick="buy_book(1234)" style="display:none" >Buy Book</button>
-    </body>
+    <script>
+		      
+
+      let token;
+      let response;
+			    
+
+      $("#bookList").hide();
+			    
+
+      async function login() {
+	  response = await $.post("/open_api/login",
+				  {
+			              "username": $("#username").val(),
+			              "password": $("#password").val()
+				  }, "json");
+			    
+
+	  if(response.status == 200) {
+	      token = await response.data;
+	      getBooks();
+			    
+
+	      $("#login").hide();
+	      $("#bookList").show();
+	  } else alert(response.data.message);
+      }
+			    
+
+      async function getBooks() {
+	  const response = await $.post("/secure_api/get_books",
+				  {
+			              "jwt": token.jwt
+				  }, "json");
+
+	  console.log(response.data.books.length);
+	  
+	  for(i = 0; i < response.data.books.length; i++) {
+	      authorTableColumn = `<td>${response.data.books[i].author}</td>`;
+	      titleTableColumn = `<td>${response.data.books[i].title}</td>`;
+	      priceTableColumn = `<td>$${response.data.books[i].price}</td>`;
+	      buttonTableColumn = `<td><button id=\"${response.data.books[i].book_id}\" onclick=\"purchaseBook(this.id);\">Purchase Book</button></td>`; 
+	      
+	      $("#books").append(
+		      "<tr>" +
+		      authorTableColumn +
+		      titleTableColumn +
+		      priceTableColumn +
+		      buttonTableColumn +
+		      "</tr>"
+	      );
+	  }
+      }
+
+      async function purchaseBook(id) {
+	  response = await $.post("/secure_api/purchase_books", 
+				  {
+				      "jwt": token.jwt, 
+				      "book_id": id
+				  }, "json");
+	  alert(response.data.message);
+      }
+      
+      </script>
+		    
+    
+    
+    <style>
+      body {
+	  background-image: url('https://wallpaperaccess.com/full/1715619.jpg');
+	  background-attachment: fixed;
+      }
+    </style>
+    
+  </body>
+  
+
 </html>
-

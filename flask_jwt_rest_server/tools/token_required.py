@@ -23,11 +23,11 @@ def token_required(f):
             'authenticated': False
         }
 
-        if len(auth_headers) != 2:
-            return json_response(status_=401 ,message=invalid_msg)
+        #if len(auth_headers) != 2:
+         #   return json_response(status_=401 ,message=invalid_msg)
 
         try:
-            token = auth_headers[1]
+            token = request.form["jwt"]
             logger.debug("Got token")
             data = jwt.decode(token,  secrets['JWT'], algorithms=["HS256"])
             #set global jwt_data
